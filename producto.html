@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Producto — MiCatálogo</title>
+  <meta name="description" content="Detalle del producto." />
+
+  <!-- Open Graph dinámico (se actualiza por JS) -->
+  <meta property="og:type" content="product" />
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Facebook Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'TU_PIXEL_ID');
+    fbq('track', 'PageView');
+  </script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+          <span class="logo-dot"></span>
+          MiCatálogo
+        </a>
+        <div class="header-actions">
+          <a href="index.html" class="btn btn-outline" style="padding:8px 16px;font-size:0.82rem;">
+            ← Volver al catálogo
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PRODUCT PAGE -->
+  <main class="product-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="product-breadcrumb">
+        <a href="index.html">Catálogo</a>
+        <span>›</span>
+        <span id="breadcrumbCat">...</span>
+        <span>›</span>
+        <span id="breadcrumbName">...</span>
+      </nav>
+
+      <!-- Loading skeleton -->
+      <div id="productSkeleton" class="product-layout">
+        <div>
+          <div class="skeleton skeleton-img" style="border-radius:20px;aspect-ratio:1"></div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <div class="skeleton" style="width:72px;height:72px;border-radius:8px"></div>
+            <div class="skeleton" style="width:72px;height:72px;border-radius:8px"></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;padding-top:12px">
+          <div class="skeleton skeleton-line w-30" style="height:20px;width:100px"></div>
+          <div class="skeleton skeleton-line" style="height:36px;width:85%"></div>
+          <div class="skeleton skeleton-line w-50" style="height:28px;width:120px"></div>
+          <div class="skeleton skeleton-line" style="height:14px"></div>
+          <div class="skeleton skeleton-line w-80" style="height:14px"></div>
+          <div class="skeleton skeleton-line w-50" style="height:14px"></div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:24px">
+            <div class="skeleton skeleton-btn" style="height:52px"></div>
+            <div class="skeleton skeleton-btn" style="height:52px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Producto real (oculto hasta que carga) -->
+      <div id="productContent" class="product-layout hidden">
+        <!-- Galería -->
+        <div class="product-gallery">
+          <div class="gallery-main">
+            <img id="mainImage" src="" alt="" loading="lazy" />
+          </div>
+          <div class="gallery-thumbs" id="thumbsContainer"></div>
+        </div>
+
+        <!-- Info -->
+        <div class="product-info-panel">
+          <span id="productCategory" class="product-category-tag"></span>
+          <h1 id="productName" class="product-name"></h1>
+
+          <div class="product-price-block">
+            <span class="product-currency">$</span>
+            <span id="productPrice" class="product-price"></span>
+          </div>
+
+          <div id="productDescription" class="product-description"></div>
+
+          <div class="product-actions">
+            <a id="btnWhatsApp" href="#" target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Pedir por WhatsApp
+            </a>
+            <a href="index.html" class="btn btn-outline btn-lg">
+              ← Ver más productos
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error state -->
+      <div id="productError" class="empty-state hidden">
+        <span class="empty-icon">⚠️</span>
+        <h3>Producto no encontrado</h3>
+        <p class="text-gray">El producto que buscas no existe o fue eliminado.</p>
+        <a href="index.html" class="btn btn-primary mt-4">Volver al catálogo</a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FAB WhatsApp flotante -->
+  <a id="fabWhatsApp" href="#" target="_blank" rel="noopener" class="fab-whatsapp hidden" title="Pedir por WhatsApp">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2024 <strong>SHOPDE</strong></p>
+  </footer>
+
+  <script type="module">
+    import { loadProduct } from './js/products.js';
+    import { formatPrice, getParam } from './js/filters.js';
+    import { buildWhatsAppURL } from './js/whatsapp.js';
+
+    const productId = getParam('id');
+
+    const skeleton = document.getElementById('productSkeleton');
+    const content  = document.getElementById('productContent');
+    const errorEl  = document.getElementById('productError');
+
+    if (!productId) {
+      skeleton.classList.add('hidden');
+      errorEl.classList.remove('hidden');
+    } else {
+      (async () => {
+        try {
+          const product = await loadProduct(productId);
+
+          // Llenar datos
+          document.title = `${product.name} — MiCatálogo`;
+          document.getElementById('productName').textContent     = product.name;
+          document.getElementById('productCategory').textContent = product.category;
+          document.getElementById('productPrice').textContent    = formatPrice(product.price);
+          document.getElementById('productDescription').textContent = product.description || 'Sin descripción disponible.';
+          document.getElementById('breadcrumbCat').textContent  = product.category;
+          document.getElementById('breadcrumbName').textContent = product.name;
+
+          // Imagen principal
+          const mainImg = document.getElementById('mainImage');
+          mainImg.src = product.image_url;
+          mainImg.alt = product.name;
+
+          // Thumbs (imagen principal como primera thumb; puedes agregar más imágenes en la DB si quieres)
+          const thumbsContainer = document.getElementById('thumbsContainer');
+          const images = [product.image_url]; // Agregar más URLs si tienes galería múltiple
+          images.forEach((url, i) => {
+            const btn = document.createElement('button');
+            btn.className = `thumb ${i === 0 ? 'active' : ''}`;
+            btn.innerHTML = `<img src="${url}" alt="Vista ${i+1}" loading="lazy" />`;
+            btn.addEventListener('click', () => {
+              mainImg.src = url;
+              thumbsContainer.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+              btn.classList.add('active');
+            });
+            thumbsContainer.appendChild(btn);
+          });
+
+          // Botones WhatsApp
+          const waURL = buildWhatsAppURL(product);
+          document.getElementById('btnWhatsApp').href = waURL;
+          const fab = document.getElementById('fabWhatsApp');
+          fab.href = waURL;
+          fab.classList.remove('hidden');
+
+          // Facebook Pixel - ViewContent
+          if (typeof fbq !== 'undefined') {
+            fbq('track', 'ViewContent', {
+              content_name: product.name,
+              content_category: product.category,
+              content_ids: [product.id],
+              value: product.price,
+              currency: 'COP',
+            });
+          }
+
+          // Mostrar contenido
+          skeleton.classList.add('hidden');
+          content.classList.remove('hidden');
+
+        } catch (err) {
+          skeleton.classList.add('hidden');
+          errorEl.classList.remove('hidden');
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

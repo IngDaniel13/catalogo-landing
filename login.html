@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso Admin — MiCatálogo</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <div class="login-page">
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="login-logo">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h1>Panel Admin</h1>
+        <p>Ingresa con tu cuenta de administrador</p>
+      </div>
+
+      <!-- Error -->
+      <div id="errorMsg" class="error-message"></div>
+
+      <!-- Form -->
+      <div>
+        <div class="form-group">
+          <label class="form-label" for="emailInput">Correo electrónico</label>
+          <input
+            type="email"
+            id="emailInput"
+            class="form-control"
+            placeholder="admin@tucorreo.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="passwordInput">Contraseña</label>
+          <input
+            type="password"
+            id="passwordInput"
+            class="form-control"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <button id="loginBtn" class="btn btn-primary btn-lg w-full mt-4" style="justify-content:center">
+          Ingresar al panel
+        </button>
+
+        <div class="text-center mt-4">
+          <a href="index.html" class="text-sm text-gray">← Volver al catálogo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabaseClient } from './js/supabase.js';
+
+    // Redirigir si ya hay sesión activa
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.href = 'admin.html';
+    });
+
+    const emailInput    = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn      = document.getElementById('loginBtn');
+    const errorMsg      = document.getElementById('errorMsg');
+
+    // Manejar Enter
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') loginBtn.click();
+    });
+
+    loginBtn.addEventListener('click', async () => {
+      const email    = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      // Validación básica
+      if (!email || !password) {
+        showError('Por favor completa todos los campos.');
+        return;
+      }
+
+      // Loading state
+      loginBtn.textContent = 'Ingresando...';
+      loginBtn.disabled = true;
+      errorMsg.classList.remove('visible');
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          showError(getErrorMessage(error.message));
+          return;
+        }
+
+        if (data.session) {
+          window.location.href = 'admin.html';
+        }
+      } catch (err) {
+        showError('Error inesperado. Intenta de nuevo.');
+      } finally {
+        loginBtn.textContent = 'Ingresar al panel';
+        loginBtn.disabled = false;
+      }
+    });
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('visible');
+    }
+
+    function getErrorMessage(raw) {
+      if (raw.includes('Invalid login credentials')) return 'Correo o contraseña incorrectos.';
+      if (raw.includes('Email not confirmed')) return 'Debes confirmar tu correo primero.';
+      if (raw.includes('Too many requests')) return 'Demasiados intentos. Espera un momento.';
+      return 'Error al iniciar sesión. Verifica tus datos.';
+    }
+  </script>
+</body>
+</html>
