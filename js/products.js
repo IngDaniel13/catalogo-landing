@@ -59,20 +59,51 @@ export function buildProductCard(product) {
 }
 
 // ── Cargar todos los productos
-export async function loadProducts({ category = null, search = null, minPrice = null, maxPrice = null } = {}) {
-  let query = supabaseClient
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
+let currentController = null;
 
-  if (category && category !== 'all') query = query.eq('category', category);
-  if (search) query = query.ilike('name', `%${search}%`);
-  if (minPrice !== null) query = query.gte('price', minPrice);
-  if (maxPrice !== null) query = query.lte('price', maxPrice);
+export async function loadProducts({
+  category = null,
+  search = null,
+  minPrice = null,
+  maxPrice = null,
+} = {}) {
+  try {
+    if (currentController) {
+      currentController.abort();
+    }
 
-  const { data, error } = await query;
-  if (error) throw error;
-  return data || [];
+    currentController = new AbortController();
+
+    let query = supabaseClient
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .abortSignal(currentController.signal);
+
+    if (category && category !== 'all') query = query.eq('category', category);
+    if (search) query = query.ilike('name', `%${search}%`);
+    if (minPrice !== null) query = query.gte('price', minPrice);
+    if (maxPrice !== null) query = query.lte('price', maxPrice);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return [];
+    }
+
+    if (!Array.isArray(data)) {
+      console.warn('Data inválida:', data);
+      return [];
+    }
+
+    return data;
+  } catch (err) {
+    if (err.name === 'AbortError') return [];
+
+    console.error('Error cargando productos:', err);
+    return [];
+  }
 }
 
 // ── Cargar producto individual por ID
